@@ -2,7 +2,9 @@ package com.hacybeyker.todoapp.fragments.list
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,10 +19,9 @@ import com.hacybeyker.todoapp.data.viewmodel.SharedViewModel
 import com.hacybeyker.todoapp.data.viewmodel.ToDoViewModel
 import com.hacybeyker.todoapp.databinding.FragmentListBinding
 import com.hacybeyker.todoapp.fragments.list.adapter.ListAdapter
-import jp.wasabeef.recyclerview.animators.LandingAnimator
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: FragmentListBinding
 
@@ -88,6 +89,10 @@ class ListFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -111,5 +116,30 @@ class ListFragment : Fragment() {
     private fun deleteAllDataToDB() {
         mToDoViewModel.deleteAllData()
         Toast.makeText(requireContext(), "Successfully Everything!", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let {
+            Log.d("TAG", "Here - onQueryTextSubmit: $it")
+            searchThroughDataBase(it)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        query?.let {
+            Log.d("TAG", "Here - onQueryTextSubmit2: $it")
+            searchThroughDataBase(it)
+        }
+        return true
+    }
+
+    private fun searchThroughDataBase(query: String) {
+        val searchQuery = "%$query%"
+        mToDoViewModel.searchDataBase(searchQuery).observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.setData(it)
+            }
+        })
     }
 }
