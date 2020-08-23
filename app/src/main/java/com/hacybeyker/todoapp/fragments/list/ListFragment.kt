@@ -7,13 +7,14 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import com.hacybeyker.todoapp.R
 import com.hacybeyker.todoapp.data.viewmodel.SharedViewModel
 import com.hacybeyker.todoapp.data.viewmodel.ToDoViewModel
-import kotlinx.android.synthetic.main.fragment_list.view.*
+import com.hacybeyker.todoapp.databinding.FragmentListBinding
 
 class ListFragment : Fragment() {
+
+    private lateinit var binding: FragmentListBinding
 
     private val mToDoViewModel: ToDoViewModel by viewModels()
     private val mSharedViewModel: SharedViewModel by viewModels()
@@ -23,38 +24,31 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
+        //return inflater.inflate(R.layout.fragment_list, container, false)
+        binding = FragmentListBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.mSharedViewModel = mSharedViewModel
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setHasOptionsMenu(true)
+        setUpRecyclerView()
+        setUpLiveData()
+    }
 
-        val recyclerView = view.recyclerView
+    private fun setUpRecyclerView() {
+        val recyclerView = binding.recyclerView
         recyclerView.adapter = adapter
+        recyclerView.setHasFixedSize(true)
+    }
+
+    private fun setUpLiveData() {
         mToDoViewModel.getAllData.observe(viewLifecycleOwner, Observer {
             mSharedViewModel.checkIfDatabaseEmpty(it)
             adapter.setData(it)
         })
-
-        view.floatingActionButton.setOnClickListener {
-            findNavController().navigate(R.id.action_listFragment_to_addFragment)
-        }
-
-        mSharedViewModel.emptyDatabase.observe(viewLifecycleOwner, Observer {
-            showEmptyDatabaseViews(it)
-        })
-    }
-
-    private fun showEmptyDatabaseViews(emptyDatabase: Boolean) {
-        if (emptyDatabase) {
-            view?.noDataImageView?.visibility = View.VISIBLE
-            view?.noDataTextView?.visibility = View.VISIBLE
-        } else {
-            view?.noDataImageView?.visibility = View.GONE
-            view?.noDataTextView?.visibility = View.GONE
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

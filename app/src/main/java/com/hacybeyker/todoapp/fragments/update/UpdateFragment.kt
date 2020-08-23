@@ -12,12 +12,14 @@ import com.hacybeyker.todoapp.R
 import com.hacybeyker.todoapp.data.models.ToDoData
 import com.hacybeyker.todoapp.data.viewmodel.SharedViewModel
 import com.hacybeyker.todoapp.data.viewmodel.ToDoViewModel
-import kotlinx.android.synthetic.main.fragment_update.*
-import kotlinx.android.synthetic.main.fragment_update.view.*
+import com.hacybeyker.todoapp.databinding.FragmentUpdateBinding
 
 class UpdateFragment : Fragment() {
 
+    private lateinit var binding: FragmentUpdateBinding
+
     private val args by navArgs<UpdateFragmentArgs>()
+
     private val mSharedViewModel: SharedViewModel by viewModels()
     private val mToDoViewModel: ToDoViewModel by viewModels()
 
@@ -26,15 +28,15 @@ class UpdateFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_update, container, false)
+        binding = FragmentUpdateBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.args = args
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.updateTitleEdit.setText(args.currentItem.title)
-        view.updatePrioritySpinner.setSelection(mSharedViewModel.parsePriorityToInt(args.currentItem.priority))
-        view.updatePrioritySpinner.onItemSelectedListener = mSharedViewModel.listener
-        view.updateDescriptionEdit.setText(args.currentItem.description)
+        binding.updatePrioritySpinner.onItemSelectedListener = mSharedViewModel.listener
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -50,9 +52,9 @@ class UpdateFragment : Fragment() {
     }
 
     private fun updateDataToDB() {
-        val mTitle = updateTitleEdit.text.toString()
-        val mPriority = updatePrioritySpinner.selectedItem.toString()
-        val mDescription = updateDescriptionEdit.text.toString()
+        val mTitle = binding.updateTitleEdit.text.toString()
+        val mPriority = binding.updatePrioritySpinner.selectedItem.toString()
+        val mDescription = binding.updateDescriptionEdit.text.toString()
         val validation = mSharedViewModel.verifyDataFromUser(mTitle, mDescription)
         if (validation) {
             val updateData =

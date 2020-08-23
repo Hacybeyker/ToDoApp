@@ -1,56 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp"
-    tools:context=".fragments.update.UpdateFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/updateTitleEdit"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:background="@drawable/custom_input"
-        android:ems="10"
-        android:hint="@string/title"
-        android:inputType="textCapWords"
-        android:maxLines="1"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/updatePrioritySpinner"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/custom_input"
-        android:entries="@array/priorities"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/updateTitleEdit" />
+        <variable
+            name="args"
+            type="com.hacybeyker.todoapp.fragments.update.UpdateFragmentArgs" />
+    </data>
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/updateDescriptionEdit"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingTop="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/custom_input"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/description"
-        android:inputType="textMultiLine"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/updatePrioritySpinner" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        tools:context=".fragments.update.UpdateFragment">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/updateTitleEdit"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:background="@drawable/custom_input"
+            android:ems="10"
+            android:hint="@string/title"
+            android:inputType="textCapWords"
+            android:maxLines="1"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@{args.currentItem.title}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/updatePrioritySpinner"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:parsePriorityToInt="@{args.currentItem.priority}"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/custom_input"
+            android:entries="@array/priorities"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/updateTitleEdit" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/updateDescriptionEdit"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/custom_input"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="@string/description"
+            android:inputType="textMultiLine"
+            android:paddingStart="24dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="24dp"
+            android:text="@{args.currentItem.description}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/updatePrioritySpinner" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
