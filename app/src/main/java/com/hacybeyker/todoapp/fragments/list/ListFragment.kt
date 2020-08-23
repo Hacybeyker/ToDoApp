@@ -9,9 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
 import com.hacybeyker.todoapp.R
 import com.hacybeyker.todoapp.data.models.ToDoData
@@ -19,6 +17,7 @@ import com.hacybeyker.todoapp.data.viewmodel.SharedViewModel
 import com.hacybeyker.todoapp.data.viewmodel.ToDoViewModel
 import com.hacybeyker.todoapp.databinding.FragmentListBinding
 import com.hacybeyker.todoapp.fragments.list.adapter.ListAdapter
+import com.hacybeyker.todoapp.utils.hideKeyboard
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -42,6 +41,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        requireActivity().hideKeyboard()
         setUpRecyclerView()
         setUpLiveData()
     }
@@ -49,7 +49,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun setUpRecyclerView() {
         val recyclerView = binding.recyclerView
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.setHasFixedSize(true)
         recyclerView.itemAnimator = SlideInUpAnimator().apply {
             addDuration = 300
@@ -82,7 +82,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         val snackBar = Snackbar.make(view, "Delete '${deletedItem.title}'", Snackbar.LENGTH_LONG)
         snackBar.setAction("Undo") {
             mToDoViewModel.insertData(deletedItem)
-            adapter.notifyItemChanged(position)
         }
         snackBar.show()
     }
@@ -98,6 +97,12 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_delete_all -> confirmAllDelete()
+            R.id.menu_priority_high -> mToDoViewModel.sortByHighPriority.observe(
+                viewLifecycleOwner,
+                Observer { adapter.setData(it) })
+            R.id.menu_priority_low -> mToDoViewModel.sortByLowPriority.observe(
+                viewLifecycleOwner,
+                Observer { adapter.setData(it) })
         }
         return super.onOptionsItemSelected(item)
     }
